@@ -1,6 +1,17 @@
 {% extends "layouts/dashboard.twig" %}
 {% block content %}
     <h2 class="headline">Create your {{ site.title }} speaker profile below</h2>
+    <p class="bg-info text-info" style="padding: 15px;display: block;"><strong>
+        By submitting to {{ site.title }}, you agree to follow our <a href="http://2016.phpsouthcoast.co.uk/code-of-conduct">Code of Conduct</a>.<br />
+        <br />
+        In brief, {{ site.title }} is dedicated to providing a harassment-free conference
+        experience for everyone, regardless of gender, sexual orientation, disability,
+        physical appearance, body size, race, or religion. We do not tolerate harassment
+        of conference participants in any form. Sexual language and imagery is not
+        appropriate for any conference venue, including talks. Conference participants
+        (<em>that includes speakers</em>) violating these rules may be sanctioned or expelled
+        from the conference without a refund at the discretion of the conference organizers.
+    </strong></p>
     <p>A complete profile improves your chances of being selected.</p>
     {% include 'forms/_user.twig' %}
 {% endblock %}
