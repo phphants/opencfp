@@ -3,14 +3,14 @@
 namespace OpenCFP\Http\Controller\Admin;
 
 use OpenCFP\Http\Controller\BaseController;
-use Symfony\Component\HttpFoundation\Request;
 use Pagerfanta\View\TwitterBootstrap3View;
+use Symfony\Component\HttpFoundation\Request;
 
 class ReviewController extends BaseController
 {
     use AdminAccessTrait;
 
-    private function indexAction(Request $req)
+    public function indexAction(Request $req)
     {
         $user = $this->app['sentry']->getUser();
 
@@ -45,7 +45,7 @@ class ReviewController extends BaseController
         $pagination = $view->render(
             $pagerfanta,
             $routeGenerator,
-            array('proximity' => 3)
+            ['proximity' => 3]
         );
 
         $template_data = [
@@ -55,7 +55,6 @@ class ReviewController extends BaseController
             'totalRecords' => count($talks),
             'per_page' => $per_page,
             'filter' => $req->get('filter'),
-            'per_page' => $per_page,
             'sort' => $req->get('sort'),
             'order_by' => $req->get('order_by'),
         ];

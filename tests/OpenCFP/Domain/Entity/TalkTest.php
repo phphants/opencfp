@@ -14,7 +14,7 @@ class TalkEntityTest extends \PHPUnit_Framework_TestCase
         $cfg = new \Spot\Config;
         $cfg->addConnection('sqlite', [
             'dbname' => 'sqlite::memory',
-            'driver' => 'pdo_sqlite'
+            'driver' => 'pdo_sqlite',
         ]);
         $this->app['spot'] = new \Spot\Locator($cfg);
 
@@ -31,11 +31,11 @@ class TalkEntityTest extends \PHPUnit_Framework_TestCase
     public function utf8CharactersCorrectlyEncoded()
     {
         $title = "Battle: Feature Branches VS Feature Switching (╯°□°)╯︵ ┻━┻ ︵ ╯(°□° ╯)";
-        $data = array(
+        $data = [
             'title' => $title,
             'description' => 'Talk with UTF-8 characters in the title',
-            'user_id' => 1
-        );
+            'user_id' => 1,
+        ];
         $talk = $this->mapper->create($data);
 
         $this->assertEquals(
@@ -75,7 +75,7 @@ class TalkEntityTest extends \PHPUnit_Framework_TestCase
             $data = [
                 'title' => $title,
                 'description' => "Description for $title",
-                'user_id' => 1
+                'user_id' => 1,
             ];
             $this->mapper->create($data);
         }

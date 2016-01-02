@@ -1,8 +1,8 @@
 <?php
 namespace OpenCFP;
 
-use Cartalyst\Sentry\Users\UserNotFoundException;
 use \Mockery as m;
+use Cartalyst\Sentry\Users\UserNotFoundException;
 use OpenCFP\Domain\Services\Login;
 
 class LoginTest extends \PHPUnit_Framework_TestCase
@@ -11,10 +11,10 @@ class LoginTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->credentials = array(
+        $this->credentials = [
             'email'    => 'foo@bar.com',
             'password' => 'baz_bat',
-        );
+        ];
     }
 
     public function testAuthenticateInvalid()

@@ -2,20 +2,20 @@
 
 namespace OpenCFP\Http\Controller\Admin;
 
-use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Pagerfanta;
-use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
-use Pagerfanta\View\TwitterBootstrap3View;
 use OpenCFP\Http\Controller\BaseController;
 use OpenCFP\Http\Controller\FlashableTrait;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\View\TwitterBootstrap3View;
+use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 
 class SpeakersController extends BaseController
 {
     use AdminAccessTrait;
     use FlashableTrait;
 
-    private function indexAction(Request $req)
+    public function indexAction(Request $req)
     {
         $rawSpeakers = $this->app['spot']
             ->mapper('OpenCFP\Domain\Entity\User')
@@ -41,22 +41,22 @@ class SpeakersController extends BaseController
         $pagination = $view->render(
             $pagerfanta,
             $routeGenerator,
-            array('proximity' => 3)
+            ['proximity' => 3]
         );
 
-        $templateData = array(
+        $templateData = [
             'airport' => $this->app->config('application.airport'),
             'arrival' => date('Y-m-d', $this->app->config('application.arrival')),
             'departure' => date('Y-m-d', $this->app->config('application.departure')),
             'pagination' => $pagination,
             'speakers' => $pagerfanta,
-            'page' => $pagerfanta->getCurrentPage()
-        );
+            'page' => $pagerfanta->getCurrentPage(),
+        ];
 
         return $this->render('admin/speaker/index.twig', $templateData);
     }
 
-    private function viewAction(Request $req)
+    public function viewAction(Request $req)
     {
         // Check if user is an logged in and an Admin
         if (!$this->userHasAccess($this->app)) {
@@ -65,14 +65,24 @@ class SpeakersController extends BaseController
 
         // Get info about the speaker
         $user_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\User');
-        $speaker_details = $user_mapper->get($req->get('id'))->toArray();
+        $speaker_details = $user_mapper->get($req->get('id'));
+
+        if (empty($speaker_details)) {
+            $this->app['session']->set('flash', [
+                'type' => 'error',
+                'short' => 'Error',
+                'ext' => "Could not find requested speaker",
+            ]);
+
+            return $this->app->redirect($this->url('admin_speakers'));
+        }
 
         // Get info about the talks
         $talk_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
         $talks = $talk_mapper->getByUser($req->get('id'))->toArray();
 
         // Build and render the template
-        $templateData = array(
+        $templateData = [
             'airport' => $this->app->config('application.airport'),
             'arrival' => date('Y-m-d', $this->app->config('application.arrival')),
             'departure' => date('Y-m-d', $this->app->config('application.departure')),
@@ -80,12 +90,12 @@ class SpeakersController extends BaseController
             'talks' => $talks,
             'photo_path' => '/uploads/',
             'page' => $req->get('page'),
-        );
+        ];
 
         return $this->render('admin/speaker/view.twig', $templateData);
     }
 
-    private function deleteAction(Request $req)
+    public function deleteAction(Request $req)
     {
         // Check if user is an logged in and an Admin
         if (!$this->userHasAccess($this->app)) {
@@ -107,11 +117,11 @@ class SpeakersController extends BaseController
         }
 
         // Set flash message
-        $this->app['session']->set('flash', array(
+        $this->app['session']->set('flash', [
             'type' => $type,
             'short' => $short,
-            'ext' => $ext
-        ));
+            'ext' => $ext,
+        ]);
 
         return $this->redirectTo('admin_speakers');
     }

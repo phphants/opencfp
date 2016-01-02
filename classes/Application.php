@@ -3,26 +3,27 @@
 namespace OpenCFP;
 
 use Igorw\Silex\ChainConfigDriver;
+use Igorw\Silex\ConfigServiceProvider;
 use Igorw\Silex\JsonConfigDriver;
 use Igorw\Silex\PhpConfigDriver;
 use Igorw\Silex\TomlConfigDriver;
 use League\OAuth2\Server\Exception\OAuthException;
 use OpenCFP\Provider\ApplicationServiceProvider;
+use OpenCFP\Provider\ControllerResolverServiceProvider;
+use OpenCFP\Provider\DatabaseServiceProvider;
 use OpenCFP\Provider\Gateways\ApiGatewayProvider;
 use OpenCFP\Provider\Gateways\OAuthGatewayProvider;
 use OpenCFP\Provider\Gateways\WebGatewayProvider;
+use OpenCFP\Provider\HtmlPurifierServiceProvider;
 use OpenCFP\Provider\ImageProcessorProvider;
 use OpenCFP\Provider\ResetEmailerServiceProvider;
+use OpenCFP\Provider\SentryServiceProvider;
+use OpenCFP\Provider\SpotServiceProvider;
 use OpenCFP\Provider\TwigServiceProvider;
 use OpenCFP\Provider\YamlConfigDriver;
 use Silex\Application as SilexApplication;
-use Igorw\Silex\ConfigServiceProvider;
-use OpenCFP\Provider\DatabaseServiceProvider;
-use OpenCFP\Provider\HtmlPurifierServiceProvider;
-use OpenCFP\Provider\SentryServiceProvider;
-use OpenCFP\Provider\SpotServiceProvider;
-use OpenCFP\Provider\ControllerResolverServiceProvider;
 use Silex\Provider\FormServiceProvider;
+use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Silex\Provider\SwiftmailerServiceProvider;
 use Silex\Provider\TranslationServiceProvider;
@@ -62,6 +63,13 @@ class Application extends SilexApplication
         $this->register(new DatabaseServiceProvider);
         $this->register(new ValidatorServiceProvider);
         $this->register(new TranslationServiceProvider);
+        $this->register(new MonologServiceProvider, [
+            'monolog.logfile' => $this->config('log.path') ?: "{$basePath}/log/app.log",
+            'monolog.name' => 'opencfp',
+            'monlog.level' => strtoupper(
+                $this->config('log.level') ?: 'debug'
+            ),
+        ]);
         $this->register(new SwiftmailerServiceProvider, [
             'swiftmailer.options' => [
                 'host' => $this->config('mail.host'),
@@ -288,7 +296,7 @@ class Application extends SilexApplication
                 }
 
                 return new JsonResponse([
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ], $code, $headers);
             }
 

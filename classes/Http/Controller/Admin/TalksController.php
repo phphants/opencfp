@@ -3,9 +3,9 @@
 namespace OpenCFP\Http\Controller\Admin;
 
 use OpenCFP\Http\Controller\BaseController;
-use Symfony\Component\HttpFoundation\Request;
-use Pagerfanta\View\TwitterBootstrap3View;
 use OpenCFP\Http\Controller\FlashableTrait;
+use Pagerfanta\View\TwitterBootstrap3View;
+use Symfony\Component\HttpFoundation\Request;
 
 class TalksController extends BaseController
 {
@@ -52,7 +52,7 @@ class TalksController extends BaseController
         $pagination = $view->render(
             $pagerfanta,
             $routeGenerator,
-            array('proximity' => 3)
+            ['proximity' => 3]
         );
 
         $templateData = [
@@ -118,6 +118,20 @@ class TalksController extends BaseController
         $meta_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\TalkMeta');
         $talk_id = $req->get('id');
 
+        $talk = $talk_mapper->where(['id' => $talk_id])
+            ->with(['comments'])
+            ->first();
+
+        if (empty($talk)) {
+            $this->app['session']->set('flash', [
+                'type' => 'error',
+                'short' => 'Error',
+                'ext' => "Could not find requested talk",
+            ]);
+
+            return $this->app->redirect($this->url('admin_talks'));
+        }
+
         // Mark talk as viewed by admin
         $talk_meta = $meta_mapper->where([
                 'admin_user_id' => $this->app['sentry']->getUser()->getId(),
@@ -136,9 +150,6 @@ class TalksController extends BaseController
             $meta_mapper->save($talk_meta);
         }
 
-        $talk = $talk_mapper->where(['id' => $talk_id])
-            ->with(['comments'])
-            ->first();
         $all_talks = $talk_mapper->all()
             ->where(['user_id' => $talk->user_id])
             ->toArray();
@@ -157,17 +168,17 @@ class TalksController extends BaseController
         });
 
         // Build and render the template
-        $templateData = array(
+        $templateData = [
             'talk' => $talk,
             'talk_meta' => $talk_meta,
             'speaker' => $speaker,
             'otherTalks' => $otherTalks,
-        );
+        ];
 
         return $this->render('admin/talks/view.twig', $templateData);
     }
 
-    private function rateAction(Request $req)
+    public function rateAction(Request $req)
     {
         if (!$this->userHasAccess($this->app)) {
             return false;
@@ -186,7 +197,7 @@ class TalksController extends BaseController
 
         $talk_meta = $mapper->where([
                 'admin_user_id' => $admin_user_id,
-                'talk_id' => (int)$req->get('id')
+                'talk_id' => (int)$req->get('id'),
             ])
             ->first();
 
@@ -208,7 +219,7 @@ class TalksController extends BaseController
      * @param  Request $req Request Object
      * @return bool
      */
-    private function favoriteAction(Request $req)
+    public function favoriteAction(Request $req)
     {
         if (!$this->userHasAccess($this->app)) {
             return false;
@@ -227,7 +238,7 @@ class TalksController extends BaseController
             // Delete the record that matches
             $favorite = $mapper->first([
                 'admin_user_id' => $admin_user_id,
-                'talk_id' => (int) $req->get('id')
+                'talk_id' => (int) $req->get('id'),
             ]);
 
             return $mapper->delete($favorite);
@@ -235,7 +246,7 @@ class TalksController extends BaseController
 
         $previous_favorite = $mapper->where([
             'admin_user_id' => $admin_user_id,
-            'talk_id' => (int) $req->get('id')
+            'talk_id' => (int) $req->get('id'),
         ]);
 
         if ($previous_favorite->count() == 0) {
@@ -255,7 +266,7 @@ class TalksController extends BaseController
      * @param  Request $req Request Object
      * @return bool
      */
-    private function selectAction(Request $req)
+    public function selectAction(Request $req)
     {
         if (!$this->userHasAccess($this->app)) {
             return false;
@@ -275,7 +286,7 @@ class TalksController extends BaseController
         return true;
     }
 
-    private function commentCreateAction(Request $req)
+    public function commentCreateAction(Request $req)
     {
         if (!$this->userHasAccess($this->app)) {
             return false;
@@ -296,7 +307,7 @@ class TalksController extends BaseController
         $this->app['session']->set('flash', [
                 'type' => 'success',
                 'short' => 'Success',
-                'ext' => "Comment Added!"
+                'ext' => "Comment Added!",
             ]);
 
         return $this->app->redirect($this->url('admin_talk_view', ['id' => $talk_id]));
