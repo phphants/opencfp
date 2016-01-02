@@ -104,6 +104,7 @@ class TalkForm extends Form
         $validTalkTypes = [
             'regular',
             'tutorial',
+            'lightning'
         ];
 
         if (empty($this->_cleanData['type']) || !isset($this->_cleanData['type'])) {
@@ -127,6 +128,7 @@ class TalkForm extends Form
             'entry',
             'mid',
             'advanced',
+            'mixed'
         ];
 
         if (empty($this->_cleanData['level']) || !isset($this->_cleanData['level'])) {
@@ -159,6 +161,11 @@ class TalkForm extends Form
             'other',
             'continuousdelivery',
             'ibmi',
+            'apps',
+            'performance',
+            'internals',
+            'community',
+            'ai'
         ];
 
         if (empty($this->_cleanData['category']) || !isset($this->_cleanData['category'])) {
