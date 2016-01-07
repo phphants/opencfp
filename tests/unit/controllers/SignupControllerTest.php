@@ -1,6 +1,5 @@
 <?php
 use Mockery as m;
-use OpenCFP\Application;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
 
@@ -11,7 +10,7 @@ class SignupControllerTest extends PHPUnit_Framework_TestCase
      */
     public function signupWithValidInfoWorks()
     {
-        $app = m::mock('OpenCFP\Application');
+        $app = m::mock(\OpenCFP\Application::class);
         $app->shouldReceive('redirect');
 
         // Create a session
@@ -38,7 +37,7 @@ class SignupControllerTest extends PHPUnit_Framework_TestCase
             'speaker_bio' => null,
             'transportation' => null,
             'hotel' => null,
-            'buttonInfo' => 'Create my speaker profile'
+            'buttonInfo' => 'Create my speaker profile',
         ];
 
         // Set our HTMLPurifier we use for validation
@@ -48,7 +47,7 @@ class SignupControllerTest extends PHPUnit_Framework_TestCase
 
         // Create a pretend Sentry object that says everything is cool
         $sentry = m::mock('stdClass');
-        $user = m::mock('OpenCFP\Domain\Entity\User');
+        $user = m::mock(\OpenCFP\Domain\Entity\User::class);
         $user->shouldReceive('set');
         $user->shouldReceive('addGroup');
         $user->shouldReceive('relation');

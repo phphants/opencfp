@@ -8,7 +8,7 @@ namespace OpenCFP\Http\Form;
  */
 class TalkForm extends Form
 {
-    protected $_fieldList = array(
+    protected $_fieldList = [
         'title',
         'description',
         'type',
@@ -18,8 +18,8 @@ class TalkForm extends Form
         'slides',
         'other',
         'sponsor',
-        'user_id'
-    );
+        'user_id',
+    ];
 
     /**
      * Santize all our fields that were submitted
@@ -101,11 +101,11 @@ class TalkForm extends Form
      */
     public function validateType()
     {
-        $validTalkTypes = array(
+        $validTalkTypes = [
             'regular',
             'tutorial',
             'lightning'
-        );
+        ];
 
         if (empty($this->_cleanData['type']) || !isset($this->_cleanData['type'])) {
             $this->_addErrorMessage("You must choose what type of talk you are submitting");
@@ -124,12 +124,12 @@ class TalkForm extends Form
 
     public function validateLevel()
     {
-        $validLevels = array(
+        $validLevels = [
             'entry',
             'mid',
             'advanced',
             'mixed'
-        );
+        ];
 
         if (empty($this->_cleanData['level']) || !isset($this->_cleanData['level'])) {
             $this->_addErrorMessage("You must choose what level of talk you are submitting");
@@ -148,7 +148,7 @@ class TalkForm extends Form
 
     public function validateCategory()
     {
-        $validCategories = array(
+        $validCategories = [
             'development',
             'framework',
             'database',
@@ -166,7 +166,7 @@ class TalkForm extends Form
             'internals',
             'community',
             'ai'
-        );
+        ];
 
         if (empty($this->_cleanData['category']) || !isset($this->_cleanData['category'])) {
             $this->_addErrorMessage("You must choose what category of talk you are submitting");

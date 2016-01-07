@@ -5,12 +5,12 @@ namespace OpenCFP\Application;
 use Mockery as m;
 use Mockery\MockInterface;
 use OpenCFP\Domain\CallForProposal;
+use OpenCFP\Domain\Entity\Talk;
+use OpenCFP\Domain\Entity\User;
 use OpenCFP\Domain\Services\EventDispatcher;
 use OpenCFP\Domain\Services\IdentityProvider;
 use OpenCFP\Domain\Speaker\SpeakerRepository;
 use OpenCFP\Domain\Talk\TalkRepository;
-use OpenCFP\Domain\Entity\Talk;
-use OpenCFP\Domain\Entity\User;
 use OpenCFP\Domain\Talk\TalkSubmission;
 
 class SpeakersTest extends \PHPUnit_Framework_TestCase
@@ -39,11 +39,11 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->identityProvider = m::mock('OpenCFP\Domain\Services\IdentityProvider');
-        $this->speakerRepository = m::mock('OpenCFP\Domain\Speaker\SpeakerRepository');
-        $this->talkRepository = m::mock('OpenCFP\Domain\Talk\TalkRepository');
-        $this->callForProposal = m::mock('OpenCFP\Domain\CallForProposal');
-        $this->dispatcher = m::mock('OpenCFP\Domain\Services\EventDispatcher');
+        $this->identityProvider = m::mock(\OpenCFP\Domain\Services\IdentityProvider::class);
+        $this->speakerRepository = m::mock(\OpenCFP\Domain\Speaker\SpeakerRepository::class);
+        $this->talkRepository = m::mock(\OpenCFP\Domain\Talk\TalkRepository::class);
+        $this->callForProposal = m::mock(\OpenCFP\Domain\CallForProposal::class);
+        $this->dispatcher = m::mock(\OpenCFP\Domain\Services\EventDispatcher::class);
 
         $this->sut = new Speakers($this->callForProposal, $this->identityProvider, $this->speakerRepository, $this->talkRepository, $this->dispatcher);
     }
@@ -66,7 +66,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
 
         $profile = $this->sut->findProfile();
 
-        $this->assertInstanceOf('OpenCFP\Domain\Speaker\SpeakerProfile', $profile);
+        $this->assertInstanceOf(\OpenCFP\Domain\Speaker\SpeakerProfile::class, $profile);
         $this->assertEquals($speaker->email, $profile->getEmail());
         $this->assertEquals($speaker->first_name . ' ' . $speaker->last_name, $profile->getName());
     }
@@ -76,7 +76,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
     {
         $this->trainStudentRepositoryToThrowEntityNotFoundException();
 
-        $this->setExpectedException('OpenCFP\Domain\EntityNotFoundException');
+        $this->setExpectedException(\OpenCFP\Domain\EntityNotFoundException::class);
         $this->sut->findProfile();
     }
 
@@ -97,7 +97,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
         // something screwy attempting to get a talk they should be able to.
         $this->trainIdentityProviderToReturnSampleSpeaker($this->getSpeakerWithNoTalks());
 
-        $this->setExpectedException('OpenCFP\Application\NotAuthorizedException');
+        $this->setExpectedException(\OpenCFP\Application\NotAuthorizedException::class);
         $this->sut->getTalk(1);
     }
 
@@ -120,7 +120,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
     {
         $this->trainIdentityProviderToReturnSampleSpeaker($this->getSpeakerFromMisbehavingSpot());
 
-        $this->setExpectedException('OpenCFP\Application\NotAuthorizedException');
+        $this->setExpectedException(\OpenCFP\Application\NotAuthorizedException::class);
         $this->sut->getTalk(1);
     }
 
@@ -140,11 +140,11 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             ->andReturn($this->getSpeaker());
 
         $this->talkRepository->shouldReceive('persist')
-            ->with(m::type('OpenCFP\Domain\Entity\Talk'))
+            ->with(m::type(\OpenCFP\Domain\Entity\Talk::class))
             ->once();
 
         $this->dispatcher->shouldReceive('dispatch')
-            ->with('opencfp.talk.submit', m::type('OpenCFP\Domain\Talk\TalkWasSubmitted'))
+            ->with('opencfp.talk.submit', m::type(\OpenCFP\Domain\Talk\TalkWasSubmitted::class))
             ->once();
 
         $submission = TalkSubmission::fromNative([
@@ -152,7 +152,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             'description' => 'Some example talk for our submission',
             'type' => 'regular',
             'category' => 'api',
-            'level' => 'mid'
+            'level' => 'mid',
         ]);
 
         /**
@@ -177,7 +177,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             'description' => 'Some example talk for our submission',
             'type' => 'regular',
             'category' => 'api',
-            'level' => 'mid'
+            'level' => 'mid',
         ]);
 
         $this->sut->submitTalk($submission);
@@ -197,7 +197,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
     private function trainStudentRepositoryToThrowEntityNotFoundException()
     {
         $this->identityProvider->shouldReceive('getCurrentUser')
-            ->andThrow('OpenCFP\Domain\EntityNotFoundException');
+            ->andThrow(\OpenCFP\Domain\EntityNotFoundException::class);
     }
 
     private function getSpeaker()
@@ -206,7 +206,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             'id' => self::SPEAKER_ID,
             'email' => 'speaker@opencfp.org',
             'first_name' => 'Fake',
-            'last_name' => 'Speaker'
+            'last_name' => 'Speaker',
         ]);
     }
 
@@ -234,7 +234,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             new Talk([
                 'id' => 1,
                 'title' => 'Testy Talk',
-                'user_id' => self::SPEAKER_ID + 1 // Not the speaker!
+                'user_id' => self::SPEAKER_ID + 1, // Not the speaker!
             ])
         );
 
@@ -253,7 +253,7 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             new Talk([
                 'id' => 1,
                 'title' => 'Testy Talk',
-                'user_id' => self::SPEAKER_ID
+                'user_id' => self::SPEAKER_ID,
             ])
         );
 
@@ -272,18 +272,18 @@ class SpeakersTest extends \PHPUnit_Framework_TestCase
             new Talk([
                 'id' => 1,
                 'title' => 'Testy Talk',
-                'user_id' => self::SPEAKER_ID
+                'user_id' => self::SPEAKER_ID,
             ]),
             new Talk([
                 'id' => 2,
                 'title' => 'Another Talk',
-                'user_id' => self::SPEAKER_ID
+                'user_id' => self::SPEAKER_ID,
             ]),
             new Talk([
                 'id' => 3,
                 'title' => 'Yet Another Talk',
-                'user_id' => self::SPEAKER_ID
-            ])
+                'user_id' => self::SPEAKER_ID,
+            ]),
         ]);
 
         return $stub;

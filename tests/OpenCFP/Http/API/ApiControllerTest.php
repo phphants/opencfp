@@ -1,6 +1,6 @@
 <?php
 
-use OpenCFP\Http\API\ApiController;
+use OpenCFP\Http\API\StubApiController;
 
 class ApiControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -9,7 +9,7 @@ class ApiControllerTest extends PHPUnit_Framework_TestCase
      */
     private $sut;
 
-    protected function setup()
+    protected function setUp()
     {
         $this->sut = new StubApiController();
     }
@@ -75,8 +75,4 @@ class ApiControllerTest extends PHPUnit_Framework_TestCase
             ['InternalError', 500, 'Internal server error'],
         ];
     }
-}
-
-class StubApiController extends ApiController
-{
 }

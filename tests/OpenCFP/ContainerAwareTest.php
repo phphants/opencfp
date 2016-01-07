@@ -2,7 +2,7 @@
 
 namespace OpenCFP;
 
-use OpenCFP\Application;
+use Mockery as m;
 
 class ContainerAwareTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,10 +14,10 @@ class ContainerAwareTest extends \PHPUnit_Framework_TestCase
         $application = $this->getApplicationMock();
 
         $application
-            ->expects($this->once())
-            ->method('offsetGet')
-            ->with($this->identicalTo($slug))
-            ->willReturn($service)
+            ->shouldReceive('offsetGet')
+            ->once()
+            ->with($slug)
+            ->andReturn($service)
         ;
 
         $containerAware = new ContainerAwareFake();
@@ -28,13 +28,10 @@ class ContainerAwareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|Application
+     * @return m\MockInterface|Application
      */
     private function getApplicationMock()
     {
-        return $this->getMockBuilder('OpenCFP\Application')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        return m::mock(Application::class);
     }
 }

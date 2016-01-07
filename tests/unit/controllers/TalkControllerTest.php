@@ -9,7 +9,7 @@ class TalkControllerTest extends PHPUnit_Framework_TestCase
     protected $app;
     protected $req;
 
-    protected function setup()
+    protected function setUp()
     {
         $this->app = new Application(BASE_PATH, Environment::testing());
         ob_start();
@@ -20,12 +20,12 @@ class TalkControllerTest extends PHPUnit_Framework_TestCase
         $cfg = new \Spot\Config;
         $cfg->addConnection('sqlite', [
             'dbname' => 'sqlite::memory',
-            'driver' => 'pdo_sqlite'
+            'driver' => 'pdo_sqlite',
         ]);
         $this->app['spot'] = new \Spot\Locator($cfg);
 
         // Initialize the talk table in the sqlite database
-        $talk_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+        $talk_mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
         $talk_mapper->migrate();
 
         // Set things up so Sentry believes we're logged in
@@ -73,7 +73,7 @@ class TalkControllerTest extends PHPUnit_Framework_TestCase
             'slides' => '',
             'other' => '',
             'sponsor' => '',
-            'user_id' => $this->app['sentry']->getUser()->getId()
+            'user_id' => $this->app['sentry']->getUser()->getId(),
         ];
 
         $this->setPost($talk_data);
@@ -110,20 +110,5 @@ class TalkControllerTest extends PHPUnit_Framework_TestCase
         foreach ($data as $key => $value) {
             $this->req->shouldReceive('get')->with($key)->andReturn($value);
         }
-    }
-}
-
-class SessionDouble extends Symfony\Component\HttpFoundation\Session\Session
-{
-    protected $flash;
-
-    public function get($value, $default = null)
-    {
-        return $this->$value;
-    }
-
-    public function set($name, $value)
-    {
-        $this->$name = $value;
     }
 }

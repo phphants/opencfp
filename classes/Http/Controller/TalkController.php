@@ -4,10 +4,10 @@ namespace OpenCFP\Http\Controller;
 
 use OpenCFP\Application\NotAuthorizedException;
 use OpenCFP\Application\Speakers;
+use OpenCFP\Http\Form\TalkForm;
 use Silex\Application;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\Request;
-use OpenCFP\Http\Form\TalkForm;
 
 class TalkController extends BaseController
 {
@@ -78,7 +78,7 @@ class TalkController extends BaseController
             $this->app['session']->set('flash', [
                 'type' => 'error',
                 'short' => 'Read Only',
-                'ext' => 'You cannot edit talks once the call for papers has ended']
+                'ext' => 'You cannot edit talks once the call for papers has ended', ]
             );
 
             return $this->app->redirect($this->url('talk_view', ['id' => $talk_id]));
@@ -90,14 +90,14 @@ class TalkController extends BaseController
 
         $user = $this->app['sentry']->getUser();
 
-        $talk_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+        $talk_mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
         $talk_info = $talk_mapper->get($talk_id)->toArray();
 
         if ($talk_info['user_id'] !== (int) $user->getId()) {
             return $this->redirectTo('dashboard');
         }
 
-        $data = array(
+        $data = [
             'formAction' => $this->url('talk_update'),
             'id' => $talk_id,
             'title' => html_entity_decode($talk_info['title']),
@@ -110,7 +110,7 @@ class TalkController extends BaseController
             'other' => $talk_info['other'],
             'sponsor' => $talk_info['sponsor'],
             'buttonInfo' => 'Update my talk!',
-        );
+        ];
 
         return $this->render('talk/edit.twig', $data);
     }
@@ -132,13 +132,13 @@ class TalkController extends BaseController
             $this->app['session']->set('flash', [
                 'type' => 'error',
                 'short' => 'Error',
-                'ext' => 'You cannot create talks once the call for papers has ended']
+                'ext' => 'You cannot create talks once the call for papers has ended', ]
             );
 
             return $this->redirectTo('dashboard');
         }
 
-        $data = array(
+        $data = [
             'formAction' => $this->url('talk_create'),
             'title' => $req->get('title'),
             'description' => $req->get('description'),
@@ -150,7 +150,7 @@ class TalkController extends BaseController
             'other' => $req->get('other'),
             'sponsor' => $req->get('sponsor'),
             'buttonInfo' => 'Submit my talk!',
-        );
+        ];
 
         return $this->render('talk/create.twig', $data);
     }
@@ -173,7 +173,7 @@ class TalkController extends BaseController
             $this->app['session']->set('flash', [
                 'type' => 'error',
                 'short' => 'Error',
-                'ext' => 'You cannot create talks once the call for papers has ended']
+                'ext' => 'You cannot create talks once the call for papers has ended', ]
             );
 
             return $this->redirectTo('dashboard');
@@ -181,7 +181,7 @@ class TalkController extends BaseController
 
         $user = $this->app['sentry']->getUser();
 
-        $request_data = array(
+        $request_data = [
             'title' => $req->get('title'),
             'description' => $req->get('description'),
             'type' => $req->get('type'),
@@ -191,8 +191,8 @@ class TalkController extends BaseController
             'slides' => $req->get('slides'),
             'other' => $req->get('other'),
             'sponsor' => $req->get('sponsor'),
-            'user_id' => $req->get('user_id')
-        );
+            'user_id' => $req->get('user_id'),
+        ];
 
         $form = new TalkForm($request_data, $this->app['purifier']);
         $form->sanitize();
@@ -200,7 +200,7 @@ class TalkController extends BaseController
 
         if ($isValid) {
             $sanitized_data = $form->getCleanData();
-            $data = array(
+            $data = [
                 'title' => $sanitized_data['title'],
                 'description' => $sanitized_data['description'],
                 'type' => $sanitized_data['type'],
@@ -211,16 +211,16 @@ class TalkController extends BaseController
                 'other' => $sanitized_data['other'],
                 'sponsor' => $sanitized_data['sponsor'],
                 'user_id' => (int) $user->getId(),
-            );
+            ];
 
-            $talk_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+            $talk_mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
             $talk = $talk_mapper->create($data);
 
-            $this->app['session']->set('flash', array(
+            $this->app['session']->set('flash', [
                 'type' => 'success',
                 'short' => 'Success',
                 'ext' => 'Successfully added talk.',
-            ));
+            ]);
 
             // send email to speaker showing submission
             $this->sendSubmitEmail($this->app, $user->getLogin(), $talk->id);
@@ -229,7 +229,7 @@ class TalkController extends BaseController
         }
 
         if (!$isValid) {
-            $data = array(
+            $data = [
                 'formAction' => $this->url('talk_create'),
                 'title' => $req->get('title'),
                 'description' => $req->get('description'),
@@ -241,13 +241,13 @@ class TalkController extends BaseController
                 'other' => $req->get('other'),
                 'sponsor' => $req->get('sponsor'),
                 'buttonInfo' => 'Submit my talk!',
-            );
+            ];
 
-            $this->app['session']->set('flash', array(
+            $this->app['session']->set('flash', [
                 'type' => 'error',
                 'short' => 'Error',
-                'ext' => implode("<br>", $form->getErrorMessages())
-            ));
+                'ext' => implode("<br>", $form->getErrorMessages()),
+            ]);
         }
 
         $data['flash'] = $this->getFlash($this->app);
@@ -263,7 +263,7 @@ class TalkController extends BaseController
 
         $user = $this->app['sentry']->getUser();
 
-        $request_data = array(
+        $request_data = [
             'id' => $req->get('id'),
             'title' => $req->get('title'),
             'description' => $req->get('description'),
@@ -274,8 +274,8 @@ class TalkController extends BaseController
             'slides' => $req->get('slides'),
             'other' => $req->get('other'),
             'sponsor' => $req->get('sponsor'),
-            'user_id' => $req->get('user_id')
-        );
+            'user_id' => $req->get('user_id'),
+        ];
 
         $form = new TalkForm($request_data, $this->app['purifier']);
         $form->sanitize();
@@ -283,7 +283,7 @@ class TalkController extends BaseController
 
         if ($isValid) {
             $sanitized_data = $form->getCleanData();
-            $data = array(
+            $data = [
                 'id' => (int) $sanitized_data['id'],
                 'title' => $sanitized_data['title'],
                 'description' => $sanitized_data['description'],
@@ -294,10 +294,10 @@ class TalkController extends BaseController
                 'slides' => $sanitized_data['slides'],
                 'other' => $sanitized_data['other'],
                 'sponsor' => $sanitized_data['sponsor'],
-                'user_id' => (int) $user->getId()
-            );
+                'user_id' => (int) $user->getId(),
+            ];
 
-            $mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+            $mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
             $talk = $mapper->get($data['id']);
 
             foreach ($data as $field => $value) {
@@ -306,17 +306,17 @@ class TalkController extends BaseController
 
             $mapper->save($talk);
 
-            $this->app['session']->set('flash', array(
+            $this->app['session']->set('flash', [
                 'type' => 'success',
                 'short' => 'Success',
                 'ext' => 'Successfully updated talk.',
-            ));
+            ]);
 
             return $this->redirectTo('dashboard');
         }
 
         if (! $isValid) {
-            $data = array(
+            $data = [
                 'formAction' => $this->url('talk_update'),
                 'id' => $req->get('id'),
                 'title' => $req->get('title'),
@@ -329,13 +329,13 @@ class TalkController extends BaseController
                 'other' => $req->get('other'),
                 'sponsor' => $req->get('sponsor'),
                 'buttonInfo' => 'Update my talk!',
-            );
+            ];
 
-            $this->app['session']->set('flash', array(
+            $this->app['session']->set('flash', [
                 'type' => 'error',
                 'short' => 'Error',
-                'ext' => implode("<br>", $form->getErrorMessages())
-            ));
+                'ext' => implode("<br>", $form->getErrorMessages()),
+            ]);
         }
 
         $data['flash'] = $this->getFlash($this->app);
@@ -355,7 +355,7 @@ class TalkController extends BaseController
         }
 
         $user = $app['sentry']->getUser();
-        $talk_mapper = $app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+        $talk_mapper = $app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
         $talk = $talk_mapper->get($req->get('tid'));
 
         if ($talk->user_id !== (int) $user->getId()) {
@@ -377,17 +377,17 @@ class TalkController extends BaseController
      */
     protected function sendSubmitEmail(Application $app, $email, $talk_id)
     {
-        $mapper = $app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+        $mapper = $app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
         $talk = $mapper->get($talk_id);
 
         // Build our email that we will send
         $template = $app['twig']->loadTemplate('emails/talk_submit.twig');
-        $parameters = array(
+        $parameters = [
             'email' => $this->app->config('application.email'),
             'title' => $this->app->config('application.title'),
             'talk' => $talk->title,
-            'enddate' => $this->app->config('application.enddate')
-        );
+            'enddate' => $this->app->config('application.enddate'),
+        ];
 
         try {
             $mailer = $app['mailer'];

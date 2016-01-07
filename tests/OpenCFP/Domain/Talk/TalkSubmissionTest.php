@@ -16,7 +16,7 @@ class TalkSubmissionTest extends PHPUnit_Framework_TestCase
             'description' => 'I play by the rules.',
             'type' => 'regular',
             'level' => 'entry',
-            'category' => 'api'
+            'category' => 'api',
         ]);
 
         // Factory method for talk out of submission.
@@ -37,7 +37,7 @@ class TalkSubmissionTest extends PHPUnit_Framework_TestCase
      */
     public function it_guards_that_title_is_appropriate_length($title)
     {
-        $this->setExpectedException('OpenCFP\Domain\Talk\InvalidTalkSubmissionException', 'title');
+        $this->setExpectedException(\OpenCFP\Domain\Talk\InvalidTalkSubmissionException::class, 'title');
         TalkSubmission::fromNative(['title' => $title]);
     }
 
@@ -45,53 +45,53 @@ class TalkSubmissionTest extends PHPUnit_Framework_TestCase
     {
         return [
             [''],
-            ['String over one-hundred characters long: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel placerat nulla. Nunc orci aliquam.']
+            ['String over one-hundred characters long: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel placerat nulla. Nunc orci aliquam.'],
         ];
     }
 
     /** @test */
     public function it_guards_that_description_is_provided()
     {
-        $this->setExpectedException('OpenCFP\Domain\Talk\InvalidTalkSubmissionException', 'description');
+        $this->setExpectedException(\OpenCFP\Domain\Talk\InvalidTalkSubmissionException::class, 'description');
         TalkSubmission::fromNative([
             'title' => 'Talk With No Description',
-            'description' => ''
+            'description' => '',
         ]);
     }
 
     /** @test */
     public function it_guards_that_invalid_talk_types_cannot_be_used()
     {
-        $this->setExpectedException('OpenCFP\Domain\Talk\InvalidTalkSubmissionException', 'talk type');
+        $this->setExpectedException(\OpenCFP\Domain\Talk\InvalidTalkSubmissionException::class, 'talk type');
         TalkSubmission::fromNative([
             'title' => 'Some off-the-wall Talk Type',
             'description' => 'I do not play by the rules.',
-            'type' => 'hamburger'
+            'type' => 'hamburger',
         ]);
     }
 
     /** @test */
     public function it_guards_that_invalid_level_cannot_be_used()
     {
-        $this->setExpectedException('OpenCFP\Domain\Talk\InvalidTalkSubmissionException', 'level');
+        $this->setExpectedException(\OpenCFP\Domain\Talk\InvalidTalkSubmissionException::class, 'level');
         TalkSubmission::fromNative([
             'title' => 'Invalid Skill Level Talk',
             'description' => 'I do not play by the rules.',
             'type' => 'regular',
-            'level' => 'over 9000'
+            'level' => 'over 9000',
         ]);
     }
 
     /** @test */
     public function it_guards_that_invalid_categories_cannot_be_assigned()
     {
-        $this->setExpectedException('OpenCFP\Domain\Talk\InvalidTalkSubmissionException', 'category');
+        $this->setExpectedException(\OpenCFP\Domain\Talk\InvalidTalkSubmissionException::class, 'category');
         TalkSubmission::fromNative([
             'title' => 'Invalid Categorized Talk',
             'description' => 'I do not play by the rules.',
             'type' => 'regular',
             'level' => 'entry',
-            'category' => 'skylanders'
+            'category' => 'skylanders',
         ]);
     }
 }
