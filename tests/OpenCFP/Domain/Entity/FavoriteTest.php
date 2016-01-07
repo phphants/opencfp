@@ -8,7 +8,7 @@ class FavoriteEntityTest extends \PHPUnit_Framework_TestCase
     public $mapper;
     public $talk;
 
-    protected function setup()
+    protected function setUp()
     {
         $this->app = new Application(BASE_PATH, Environment::testing());
         // Create an in-memory database
@@ -18,11 +18,11 @@ class FavoriteEntityTest extends \PHPUnit_Framework_TestCase
             'driver' => 'pdo_sqlite',
         ]);
         $this->app['spot'] = new \Spot\Locator($cfg);
-        $this->mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Favorite');
+        $this->mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Favorite::class);
         $this->mapper->migrate();
 
         // Create a talk
-        $talk_mapper = $this->app['spot']->mapper('OpenCFP\Domain\Entity\Talk');
+        $talk_mapper = $this->app['spot']->mapper(\OpenCFP\Domain\Entity\Talk::class);
         $data = [
             'title' => 'Favorite Entity Test',
             'description' => 'This is a stubbed talk for a Favorite Entity Test',
