@@ -384,7 +384,7 @@ a:hover {
 }
 
 .navbar-opencfp {
-  background: #374146;
+  background: #7e8690;
 }
 
 .navbar-collapse {
@@ -456,4 +456,14 @@ a:hover {
 .icon-12 {
   height: 12px;
   width: 12px;
+}
+
+.header-background {
+  background-image: url(/assets/img/action-stations.jpg);
+  background-size: 100%;
+  background-position: center center;
+}
+
+.navbar a.logo {
+  padding-top: 15px;
 }
